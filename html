@@ -1,0 +1,80 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSSInstagram Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #405DE6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SSSInstagram Downloader</h1>
+        <input type="text" id="urlInput" placeholder="Paste Instagram URL here">
+        <button onclick="handleDownload()">Download</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function handleDownload() {
+            const url = document.getElementById('urlInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!url) {
+                resultDiv.innerHTML = 'Please enter a valid Instagram URL';
+                return;
+            }
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `Error: ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <a href="${data.downloadUrl}" download>
+                            <button>Download ${data.type}</button>
+                        </a>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = 'Error fetching media';
+            }
+        }
+    </script>
+</body>
+</html>
